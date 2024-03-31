@@ -14,11 +14,16 @@ class Client:
 
     def main(self):
         self.sock = self.__get_connection()
-        mssg = input('input > ')
-        self.sock.send(mssg.encode())
+        while True:
+            mssg = input('input > ')
+            if mssg == 'exit':
+                self.sock.close()
+                print('Connection refused')
+                break
+            self.sock.send(mssg.encode())
 
-        data = self.sock.recv(1024)
-        print(f"Recieved data from server - {data.decode()}")
+            data = self.sock.recv(1024)
+            print(f"Recieved data from server - {data.decode()}")
 
 
 client = Client()

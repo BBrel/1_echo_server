@@ -28,7 +28,7 @@ class Server:
 			print("Client port:", address[1])
 			while True:
 				data = client_socket.recv(1024)
-				if not data:
+				if data.decode() == 'exit':
 					break
 				client_socket.send(data.upper())
 			client_socket.close()
