@@ -1,26 +1,38 @@
 import socket
 
-port=9090
-sock = socket.socket()
-sock.bind(('', port))
-print("Server is starting")
-sock.listen(0)
-print("Port",port,"is listing")
-conn, addr = sock.accept()
-print("Client is accepted")
-print("Client adress:",addr[0])
-print("Client port:",addr[1])
 
-msg = ''
+class Server:
+	def __init__(self, port=200):
+		self.port = port
+		self.host = input('input host address: ')
+		self.sock = None
 
-while True:
-	data = conn.recv(1024)
-	if not data:
-            print("All data is accepted")
-            break
-	msg += data.decode()
-	conn.send(msg.upper().encode())
+	def __init_server(self):
+		while True:
+			try:
+				sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+				sock.bind((self.host, self.port))
+				print(f"Server is listening on port {self.port}")
+				sock.listen(1)
+				return sock
+			except IOError:
+				print(f"Port {self.port} is already in use, trying the next one...")
+				self.port += 1
 
-print(msg)
+	def main(self):
+		self.sock = self.__init_server()
+		while True:
+			client_socket, address = self.sock.accept()
+			print("Client accepted")
+			print("Client address:", address[0])
+			print("Client port:", address[1])
+			while True:
+				data = client_socket.recv(1024)
+				if not data:
+					break
+				client_socket.send(data.upper())
+			client_socket.close()
 
-conn.close()
+
+server = Server()
+server.main()
